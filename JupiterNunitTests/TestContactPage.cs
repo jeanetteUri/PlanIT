@@ -1,6 +1,8 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using JupiterTestHelper;
 namespace JupiterNunitTests;
+using  System.Text.Json;
 
 [TestFixture]
 public class TestContactPage
@@ -8,19 +10,21 @@ public class TestContactPage
     String test_url = "https://jupiter.cloud.planittesting.com/#/";
     IWebDriver driver;
     ReportHelper extentReportHelper;
+    ValidationHelper validationHelper;
+
 
     [Test]
     public void TestCase1_001_ContactPage_SubmitContact_NoFieldsFilled()
     {
-        IWebElement contact;
-        IWebElement submit ;
+
+        IWebElement tempElement;
         driver.Manage().Window.Maximize();
         extentReportHelper.CreateTest("TestCase1_001_ContactPage_SubmitContact_NoFieldsFilled");
         extentReportHelper.SetStepStatusPass("Chrome Browser opened"); 
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2) ;
         driver.Url = test_url;
         try{
-            contact = driver.FindElement(By.Id("nav-contact"));
+            tempElement = driver.FindElement(By.Id("nav-contact"));
         }
         catch{
             throw new NoSuchElementException("Contact Element Not found");
@@ -28,26 +32,54 @@ public class TestContactPage
             Assert.Fail("Contact Element Not found");
         }
        
-        contact.Click();
+        tempElement.Click();
         extentReportHelper.SetStepStatusPass("Contact Page clicked");
-        submit = driver.FindElement(By.ClassName("btn-primary"));
+        tempElement = driver.FindElement(By.ClassName("btn-primary"));
         //submit = driver.FindElement(By.LinkText("Submit"));
         extentReportHelper.SetStepStatusPass("Submit button found");
-        submit.Click();
+        tempElement.Click();
         extentReportHelper.SetStepStatusPass("Clicked Submit"); 
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2) ;
-        IWebElement errorForename = driver.FindElement(By.ClassName("error"));
+        IWebElement errorForename = driver.FindElement(By.Id("forename-err"));
         string testError = errorForename.Text;
         extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
-       if(testError.Contains("Forename is required"))
+       if(!testError.Contains("Forename is required"))
        {
-        extentReportHelper.SetStepStatusPass("Passed");
-        Assert.Pass();
-       }
-       else
-       {
+        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Forename");
         Assert.Fail();
        }
+       errorForename = driver.FindElement(By.Id("email-err"));
+        testError = errorForename.Text;
+        extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
+         if(!testError.Contains("Please enter a valid email"))
+       {
+        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Email");
+        Assert.Fail();
+       }
+
+         errorForename = driver.FindElement(By.Id("message-err"));
+        testError = errorForename.Text;
+        extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
+         if(!testError.Contains("Message is required"))
+       {
+        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Email");
+        Assert.Fail();
+       }
+
+       tempElement = driver.FindElement(By.Id("forename"));
+       tempElement.SendKeys("Test");
+       tempElement = driver.FindElement(By.Id("email"));
+       tempElement.SendKeys("Test");
+       tempElement = driver.FindElement(By.Id("message"));
+       tempElement.SendKeys("Test");
+
+        tempElement = driver.FindElement(By.ClassName("btn-primary"));
+        //submit = driver.FindElement(By.LinkText("Submit"));
+        extentReportHelper.SetStepStatusPass("Submit button found");
+        tempElement.Click();
+
+       extentReportHelper.SetStepStatusPass("Passed");
+        Assert.Pass();
     }
 
     [Test]
@@ -68,6 +100,7 @@ public class TestContactPage
     [SetUp]
     public void Setup()
     {
+        validationHelper = JsonSerializer.Deserialize<ValidationHelper>(File.ReadAllText("appsettings.json"));
         extentReportHelper  = new ReportHelper();
         driver = new ChromeDriver();
     }
