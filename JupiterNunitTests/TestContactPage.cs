@@ -90,7 +90,7 @@ public class TestContactPage
             }
             else 
             {
-                extentReportHelper.SetStepStatusPass("No data found on error section");
+                extentReportHelper.SetStepStatusPass($"No error message found on {item.Tag}");
             }
         }
 
