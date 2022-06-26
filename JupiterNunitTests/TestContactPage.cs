@@ -59,22 +59,24 @@ public class TestContactPage
             if (item.Tag.ToLower().Contains("email"))
             {
                 tempElement.Clear();
-                tempElement.SendKeys(item.WrongTestData);
+                extentReportHelper.SetStepStatusPass($"Writing {item.WrongTestData} on {item.Tag}");
+                tempElement.SendKeys(item.WrongTestData);                
                 LocatorField emailItem = validationHelper.LocatorFields.First(i => i.Tag.ToLower().Contains("email"));
                 IWebElement emailElement = TestHelper.LocateControl(emailItem, driver, extentReportHelper);
                 if (!(emailElement.Text==emailItem.ExpectedErrorMessageWhenFormatIsWrong))
                 {
                     extentReportHelper.SetTestStatusFail($"Error message not as expected." +
                                     $"Expected : {emailItem.ExpectedErrorMessageWhenFormatIsWrong}." +
-                                    $"Actual : {tempElement.Text}");
+                                    $"Actual : {emailElement.Text}");
                     Assert.Fail();
                 }
                 else
                 {
-                    extentReportHelper.SetStepStatusPass("Error Message Found : " + tempElement.Text);
-                    tempElement.Clear();
+                    extentReportHelper.SetStepStatusPass($"Error Message Found : {emailElement.Text}");
                 }
-            }            
+            }
+            extentReportHelper.SetStepStatusPass($"Writing {item.CorrectTestData} on {item.Tag}");
+            tempElement.Clear();
             tempElement.SendKeys(item.CorrectTestData);
         }
 
@@ -85,6 +87,10 @@ public class TestContactPage
             {
                 extentReportHelper.SetStepStatusPass($"Failed Test: {item.Tag} should not have any error message");
                 Assert.Fail();
+            }
+            else 
+            {
+                extentReportHelper.SetStepStatusPass("No data found on error section");
             }
         }
 

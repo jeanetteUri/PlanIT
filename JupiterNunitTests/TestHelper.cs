@@ -24,7 +24,7 @@ public class TestHelper
         }
     }
 
-    public static bool IsElementExisting(LocatorField field, IWebDriver driver, ReportHelper extentReportHelper)
+    public static bool IsElementExisting(LocatorField field, IWebDriver driver)
     {
         try
         {
