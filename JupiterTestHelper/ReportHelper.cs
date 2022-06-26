@@ -14,10 +14,10 @@ public class ReportHelper
         public ExtentV3HtmlReporter reporter { get; set; }
         public ExtentTest test { get; set; }
 
-        public ReportHelper()
+        public ReportHelper(string fileName)
         {
-            extent = new ExtentReports();
-            reporter = new ExtentV3HtmlReporter(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "JupiterToys.html"));
+        extent = new ExtentReports();
+            reporter = new ExtentV3HtmlReporter(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), fileName));
             reporter.Config.DocumentTitle = "Automation Testing Report";
             reporter.Config.ReportName = "Regression Testing";
             reporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;

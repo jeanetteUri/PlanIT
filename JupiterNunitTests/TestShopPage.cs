@@ -8,11 +8,13 @@ using System.Diagnostics;
 
 namespace JupiterNunitTests;
 
-public class TestShopPage
+public class TestShopPage: TestBase
 {
-    IWebDriver driver;
-    ReportHelper extentReportHelper;
-    ValidationHelper validationHelper;
+    protected override string FileName
+    {
+        get;
+        set;
+    } = "ShopTest.html";
 
     [Test]
     public void TestCase3_ShopPage_AddtoCart_VerifyCart()
@@ -62,19 +64,5 @@ public class TestShopPage
 
     }
 
-    [SetUp]
-    public void Setup()
-    {
-        validationHelper = JsonSerializer.Deserialize<ValidationHelper>(File.ReadAllText("appsettings.json"));
-        extentReportHelper = new ReportHelper();
-        driver = new ChromeDriver();
-    }
-
-    [TearDown]
-    public void Close()
-    {
-        driver.Close();
-        driver.Quit();
-        extentReportHelper.Close();
-    }
+    
 }

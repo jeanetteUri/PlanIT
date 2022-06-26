@@ -11,12 +11,13 @@ namespace JupiterNunitTests;
 
 
 [TestFixture]
-public class TestContactPage
+public class TestContactPage:TestBase
 {
-    IWebDriver driver;
-    ReportHelper extentReportHelper;
-    ValidationHelper validationHelper;
-
+    protected override string FileName
+    {
+        get;
+        set;
+    } = "ContactTest.html";
     [Test]
     public void TestCase1_ContactPage_ValidateErrorMessages()
     {
@@ -173,21 +174,6 @@ public class TestContactPage
     //    });
     //}
 
-    [SetUp]
-    public void Setup()
-    {
-        validationHelper = JsonSerializer.Deserialize<ValidationHelper>(File.ReadAllText("appsettings.json"));
-        extentReportHelper = new ReportHelper();
-        driver = new ChromeDriver();
-    }
-
-    [TearDown]
-    public void Close()
-    {
-        driver.Close();
-        driver.Quit();
-        extentReportHelper.Close();
-    }
     // [OneTimeTearDown]
     //     public void CloseAll()
     //     {
