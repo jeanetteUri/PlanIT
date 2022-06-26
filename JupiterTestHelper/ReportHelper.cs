@@ -18,7 +18,6 @@ public class ReportHelper
         {
             extent = new ExtentReports();
             reporter = new ExtentV3HtmlReporter(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "JupiterToys.html"));
-            //reporter = new ExtentV3HtmlReporter(@"C:\Temp\PlanIT\JupiterToysReport.html");
             reporter.Config.DocumentTitle = "Automation Testing Report";
             reporter.Config.ReportName = "Regression Testing";
             reporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Standard;

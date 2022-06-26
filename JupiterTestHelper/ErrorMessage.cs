@@ -9,5 +9,4 @@ public class LocatorField
 
     public string CorrectTestData { get; set; }
     public string WrongTestData { get; set; }
-
 }
