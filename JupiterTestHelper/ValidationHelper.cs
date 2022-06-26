@@ -26,7 +26,13 @@ public class ValidationHelper
     public int NumberOfRunsForSubmission { get; set; }
     public LocatorField SuccessfulSubmission { get; set; }
     public LocatorField ModalSubmissionProgress { get; set; }
+    public LocatorField ShopPageFromHomePage { get; set; }
     public int TimeToWaitForSuccesfulSubmission_InSeconds { get; set; }
+    public LocatorField Product7_ValentineBear { get; set; }
+    public LocatorField Product4_FluffyBunny { get; set; }
+    public LocatorField Product2_StuffedFrog { get; set; }
+    public LocatorField ShopPageCartCount { get; set; }
+
 }
 
 
