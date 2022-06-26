@@ -18,7 +18,17 @@ public class ValidationHelper
         }
     }
 
-    public ErrorMessage[] ErrorMessages{get; set;}
+    public LocatorField[]? LocatorFields{get; set;}
+    public string? URLUnderTest { get; set; }
+    public LocatorField? ContactSubmitButton { get; set; }
+    public LocatorField? ContactPageFromHomePage { get; set; }
+    public LocatorField[]? TestDataInputs { get; set; }
+
+
+
+
+
+
 }
 
 

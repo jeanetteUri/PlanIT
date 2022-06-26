@@ -2,86 +2,99 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using JupiterTestHelper;
 namespace JupiterNunitTests;
+
+using System.Reflection;
 using  System.Text.Json;
 
 [TestFixture]
 public class TestContactPage
 {
-    String test_url = "https://jupiter.cloud.planittesting.com/#/";
     IWebDriver driver;
     ReportHelper extentReportHelper;
     ValidationHelper validationHelper;
 
-
-    [Test]
-    public void TestCase1_001_ContactPage_SubmitContact_NoFieldsFilled()
+    [Test] 
+    public void TestCase1_ContactPage_ValidateErrorMessages()
     {
-
         IWebElement tempElement;
         driver.Manage().Window.Maximize();
-        extentReportHelper.CreateTest("TestCase1_001_ContactPage_SubmitContact_NoFieldsFilled");
+        extentReportHelper.CreateTest(MethodBase.GetCurrentMethod().Name);
         extentReportHelper.SetStepStatusPass("Chrome Browser opened"); 
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2) ;
-        driver.Url = test_url;
-        try{
-            tempElement = driver.FindElement(By.Id("nav-contact"));
-        }
-        catch{
-            throw new NoSuchElementException("Contact Element Not found");
-            extentReportHelper.SetTestStatusFail("Contact Element Not found");
-            Assert.Fail("Contact Element Not found");
-        }
-       
+        driver.Url = validationHelper.URLUnderTest;
+
+        tempElement = TestHelper.LocateControl(validationHelper.ContactPageFromHomePage,driver,extentReportHelper);
         tempElement.Click();
-        extentReportHelper.SetStepStatusPass("Contact Page clicked");
-        tempElement = driver.FindElement(By.ClassName("btn-primary"));
-        //submit = driver.FindElement(By.LinkText("Submit"));
-        extentReportHelper.SetStepStatusPass("Submit button found");
+        extentReportHelper.SetStepStatusPass($"Clicked {validationHelper.ContactPageFromHomePage.Tag}");
+
+        tempElement = TestHelper.LocateControl(validationHelper.ContactSubmitButton, driver, extentReportHelper);
         tempElement.Click();
-        extentReportHelper.SetStepStatusPass("Clicked Submit"); 
+        extentReportHelper.SetStepStatusPass($"Clicked {validationHelper.ContactSubmitButton.Tag}");
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2) ;
-        IWebElement errorForename = driver.FindElement(By.Id("forename-err"));
-        string testError = errorForename.Text;
-        extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
-       if(!testError.Contains("Forename is required"))
-       {
-        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Forename");
-        Assert.Fail();
-       }
-       errorForename = driver.FindElement(By.Id("email-err"));
-        testError = errorForename.Text;
-        extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
-         if(!testError.Contains("Please enter a valid email"))
-       {
-        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Email");
-        Assert.Fail();
-       }
 
-         errorForename = driver.FindElement(By.Id("message-err"));
-        testError = errorForename.Text;
-        extentReportHelper.SetStepStatusPass("Error Message Found : " + testError);
-         if(!testError.Contains("Message is required"))
-       {
-        extentReportHelper.SetTestStatusFail("Wrong Error Message on Missing Email");
-        Assert.Fail();
-       }
+        
+        //Validate Error Messages when field is blank
+        foreach(LocatorField item in validationHelper.LocatorFields)
+        {
+            tempElement = TestHelper.LocateControl(item, driver, extentReportHelper);
+           
+            if (!(tempElement.Text==item.ExpectedErrorMessageWhenBlank))
+            {
+                extentReportHelper.SetTestStatusFail($"Error message not as expected." +
+                                $"Expected : {item.ExpectedErrorMessageWhenBlank}." +
+                                $"Actual : {tempElement.Text}");
+                Assert.Fail();
+            }
+            else
+            {
+                extentReportHelper.SetStepStatusPass("Error Message Found : " + tempElement.Text);
+            }
 
-       tempElement = driver.FindElement(By.Id("forename"));
-       tempElement.SendKeys("Test");
-       tempElement = driver.FindElement(By.Id("email"));
-       tempElement.SendKeys("Test");
-       tempElement = driver.FindElement(By.Id("message"));
-       tempElement.SendKeys("Test");
+        }
 
-        tempElement = driver.FindElement(By.ClassName("btn-primary"));
-        //submit = driver.FindElement(By.LinkText("Submit"));
-        extentReportHelper.SetStepStatusPass("Submit button found");
-        tempElement.Click();
+        //Input Data
+        foreach(LocatorField item in validationHelper.TestDataInputs)
+        {
+            tempElement = TestHelper.LocateControl(item, driver, extentReportHelper);
+            if (item.Tag.ToLower().Contains("email"))
+            {
+                tempElement.Clear();
+                tempElement.SendKeys(item.WrongTestData);
+                LocatorField emailItem = validationHelper.LocatorFields.First(i => i.Tag.ToLower().Contains("email"));
+                IWebElement emailElement = TestHelper.LocateControl(emailItem, driver, extentReportHelper);
+                if (!(emailElement.Text==emailItem.ExpectedErrorMessageWhenFormatIsWrong))
+                {
+                    extentReportHelper.SetTestStatusFail($"Error message not as expected." +
+                                    $"Expected : {emailItem.ExpectedErrorMessageWhenFormatIsWrong}." +
+                                    $"Actual : {tempElement.Text}");
+                    Assert.Fail();
+                }
+                else
+                {
+                    extentReportHelper.SetStepStatusPass("Error Message Found : " + tempElement.Text);
+                    tempElement.Clear();
+                }
+            }            
+            tempElement.SendKeys(item.CorrectTestData);
+        }
 
-       extentReportHelper.SetStepStatusPass("Passed");
+
+        foreach (LocatorField item in validationHelper.LocatorFields)
+        {
+            if (TestHelper.IsElementExisting(item, driver))
+            {
+                extentReportHelper.SetStepStatusPass($"Failed Test: {item.Tag} should not have any error message");
+                Assert.Fail();
+            }
+        }
+
+
+      
+        extentReportHelper.SetStepStatusPass("Passed");
         Assert.Pass();
     }
 
+   
     [Test]
     public void TestCase2_SubmitContact_AllFieldsFilled()
     {}

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.CodeDom;
 
 
-namespace JupiterNunitTests;
+namespace JupiterTestHelper;
 
 public class ReportHelper
 {
